@@ -5,22 +5,24 @@
 <?import javafx.scene.Group?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-<?import java.net.URL?>
+<?import java.net.URL?><!-- a controller is a Java class that manages the behavior and
+      interaction logic for a specific FXML-defined user interface (UI) layout. It acts as the intermediary
+      between the UI elements (defined in FXML) and the application's business logic.-->
 <Pane fx:controller="com.comp2042.GuiController"
-      xmlns:fx="http://javafx.com/fxml">
-    <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
-    <BorderPane styleClass="gameBoard" fx:id="gameBoard">
+      xmlns:fx="http://javafx.com/fxml"> <!-- Pane acts as a container for other nodes such as buttons, labels, text fields or even other panes -->
+    <GridPane fx:id="brickPanel" vgap="1" hgap="1"/> <!-- GridPane is a layout pane that arranges its child nodes in a flexible grid of rows and columns -->
+    <BorderPane styleClass="gameBoard" fx:id="gameBoard"> <!-- BorderPane is a layout pane that arranges its child nodes into 5 distinct regions: top, bottom, left, right, and center -->
         <center>
             <GridPane fx:id="gamePanel" hgap="1" vgap="1" layoutY="30" layoutX="40"/>
         </center>
     </BorderPane>
 
-    <Group fx:id="groupNotification" layoutX="14" layoutY="203">
-        <VBox alignment="CENTER">
-            <GameOverPanel fx:id="gameOverPanel"/>
+    <Group fx:id="groupNotification" layoutX="14" layoutY="203"> <!-- Group is a container component that serves as a way to group multiple nodes together -->
+        <VBox alignment="CENTER"> <!-- A VBox is a layout pane that arranges its child nodes in a single vertical column, stacking them from top to bottom -->
+            <GameOverPanel fx:id="gameOverPanel"/> <!-- Custom component that creates an instance of GameOverPanel at that spot in the scene graph -->
         </VBox>
     </Group>
-    <stylesheets>
+    <stylesheets> <!-- Link to external CSS file for styling the UI components -->
         <URL value="@window_style.css"/>
     </stylesheets>
 </Pane>

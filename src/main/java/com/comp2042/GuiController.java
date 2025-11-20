@@ -25,31 +25,31 @@ import java.util.ResourceBundle;
 
 public class GuiController implements Initializable {
 
-    private static final int BRICK_SIZE = 20;
+    private static final int BRICK_SIZE = 20; // Size of each Tetris brick in pixels
 
     @FXML
-    private GridPane gamePanel;
+    private GridPane gamePanel; // The main game grid where the Tetris bricks fall
 
     @FXML
-    private Group groupNotification;
+    private Group groupNotification; // Group to hold notification panels for score updates
 
     @FXML
-    private GridPane brickPanel;
+    private GridPane brickPanel; // Panel to display the current falling brick
 
     @FXML
-    private GameOverPanel gameOverPanel;
+    private GameOverPanel gameOverPanel; // Panel displayed when the game is over
 
-    private Rectangle[][] displayMatrix;
+    private Rectangle[][] displayMatrix; // Matrix to represent the game board visually
 
-    private InputEventListener eventListener;
+    private InputEventListener eventListener; // Listener for handling input events
 
-    private Rectangle[][] rectangles;
+    private Rectangle[][] rectangles; // Rectangles representing the current brick
 
-    private Timeline timeLine;
+    private Timeline timeLine; // Timeline for controlling the game loop
 
-    private final BooleanProperty isPause = new SimpleBooleanProperty();
+    private final BooleanProperty isPause = new SimpleBooleanProperty(); // Property to track if the game is paused
 
-    private final BooleanProperty isGameOver = new SimpleBooleanProperty();
+    private final BooleanProperty isGameOver = new SimpleBooleanProperty(); // Property to track if the game is over
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -58,27 +58,28 @@ public class GuiController implements Initializable {
         gamePanel.requestFocus();
         gamePanel.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
-            public void handle(KeyEvent keyEvent) {
-                if (isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE) {
-                    if (keyEvent.getCode() == KeyCode.LEFT || keyEvent.getCode() == KeyCode.A) {
-                        refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER)));
-                        keyEvent.consume();
+            public void handle(KeyEvent keyEvent) { //In JavaFX, a KeyEvent represents an event that occurs due to a keystroke on the keyboard
+                if (isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE) { //while game is not paused and not over
+                    if (keyEvent.getCode() == KeyCode.LEFT || keyEvent.getCode() == KeyCode.A) { //If the key pressed is left arrow or A
+                        refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER))); //Refresh the brick position after moving left
+                        keyEvent.consume(); //Consume the event so it doesn't propagate further
                     }
-                    if (keyEvent.getCode() == KeyCode.RIGHT || keyEvent.getCode() == KeyCode.D) {
-                        refreshBrick(eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER)));
-                        keyEvent.consume();
+                    if (keyEvent.getCode() == KeyCode.RIGHT || keyEvent.getCode() == KeyCode.D) { //If the key pressed is right arrow or D
+                        refreshBrick(eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER))); //Refresh the brick position after moving right
+                        keyEvent.consume(); //Consume the event so it doesn't propagate further
                     }
-                    if (keyEvent.getCode() == KeyCode.UP || keyEvent.getCode() == KeyCode.W) {
-                        refreshBrick(eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER)));
-                        keyEvent.consume();
+                    if (keyEvent.getCode() == KeyCode.UP || keyEvent.getCode() == KeyCode.W) { //If the key pressed is up arrow or W
+                        refreshBrick(eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER))); //Refresh the brick position after rotation
+                        keyEvent.consume(); //Consume the event so it doesn't propagate further
                     }
-                    if (keyEvent.getCode() == KeyCode.DOWN || keyEvent.getCode() == KeyCode.S) {
-                        moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
-                        keyEvent.consume();
+                    if (keyEvent.getCode() == KeyCode.DOWN || keyEvent.getCode() == KeyCode.S) { //If the key pressed is down arrow or S
+                        moveDown(new MoveEvent(EventType.DOWN, EventSource.USER)); //Move the brick down
+                        keyEvent.consume(); //Consume the event so it doesn't propagate further
                     }
                 }
-                if (keyEvent.getCode() == KeyCode.N) {
-                    newGame(null);
+                if (keyEvent.getCode() == KeyCode.N) { //If the key pressed is N
+                    newGame(null); //Start a new game
+                    keyEvent.consume(); //Consume the event so it doesn't propagate further (bug fix #1)
                 }
             }
         });
