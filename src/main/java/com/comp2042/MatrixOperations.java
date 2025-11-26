@@ -6,36 +6,34 @@ import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MatrixOperations {
+public class MatrixOperations { //This is a utility class that performs operations on 2d integer arrays
 
-
-    //We don't want to instantiate this utility class
     private MatrixOperations(){
 
     }
 
-    public static boolean intersect(final int[][] matrix, final int[][] brick, int x, int y) {
+    public static boolean intersect(final int[][] matrix, final int[][] brick, int x, int y) { //checks if a brick placed at (x,y) intersects with the board of goes out of bounds
         for (int i = 0; i < brick.length; i++) {
             for (int j = 0; j < brick[i].length; j++) {
                 int targetX = x + i;
                 int targetY = y + j;
                 if (brick[j][i] != 0 && (checkOutOfBound(matrix, targetX, targetY) || matrix[targetY][targetX] != 0)) {
-                    return true;
+                    return true; //collision detected
                 }
             }
         }
         return false;
     }
 
-    private static boolean checkOutOfBound(int[][] matrix, int targetX, int targetY) {
+    private static boolean checkOutOfBound(int[][] matrix, int targetX, int targetY) { //checks whether a given position is outside the board
         boolean returnValue = true;
         if (targetX >= 0 && targetY < matrix.length && targetX < matrix[targetY].length) {
-            returnValue = false;
+            returnValue = false; //inside bounds so set flag to false
         }
         return returnValue;
     }
 
-    public static int[][] copy(int[][] original) {
+    public static int[][] copy(int[][] original) { //deep copies a 2d array
         int[][] myInt = new int[original.length][];
         for (int i = 0; i < original.length; i++) {
             int[] aMatrix = original[i];
@@ -46,7 +44,7 @@ public class MatrixOperations {
         return myInt;
     }
 
-    public static int[][] merge(int[][] filledFields, int[][] brick, int x, int y) {
+    public static int[][] merge(int[][] filledFields, int[][] brick, int x, int y) { //merges a brick into the board at (x,y) and returns a new matrix
         int[][] copy = copy(filledFields);
         for (int i = 0; i < brick.length; i++) {
             for (int j = 0; j < brick[i].length; j++) {
@@ -65,7 +63,7 @@ public class MatrixOperations {
         Deque<int[]> newRows = new ArrayDeque<>();
         List<Integer> clearedRows = new ArrayList<>();
 
-        for (int i = 0; i < matrix.length; i++) {
+        for (int i = 0; i < matrix.length; i++) { //detects which rows are full
             int[] tmpRow = new int[matrix[i].length];
             boolean rowToClear = true;
             for (int j = 0; j < matrix[0].length; j++) {
@@ -74,13 +72,13 @@ public class MatrixOperations {
                 }
                 tmpRow[j] = matrix[i][j];
             }
-            if (rowToClear) {
+            if (rowToClear) { //if full, mark for deletion
                 clearedRows.add(i);
             } else {
-                newRows.add(tmpRow);
+                newRows.add(tmpRow); //keep the row
             }
         }
-        for (int i = matrix.length - 1; i >= 0; i--) {
+        for (int i = matrix.length - 1; i >= 0; i--) { //fill new matrix from bottom upwards with remaining rows
             int[] row = newRows.pollLast();
             if (row != null) {
                 tmp[i] = row;
@@ -88,12 +86,12 @@ public class MatrixOperations {
                 break;
             }
         }
-        int scoreBonus = 50 * clearedRows.size() * clearedRows.size();
+        int scoreBonus = 50 * clearedRows.size() * clearedRows.size(); //score bonus grows quadratically with number of lines cleared
         return new ClearRow(clearedRows.size(), tmp, scoreBonus);
     }
 
     public static List<int[][]> deepCopyList(List<int[][]> list){
-        return list.stream().map(MatrixOperations::copy).collect(Collectors.toList());
+        return list.stream().map(MatrixOperations::copy).collect(Collectors.toList()); //deep copies a list of int matrices (useful when storing preview shapes or history)
     }
 
 }
