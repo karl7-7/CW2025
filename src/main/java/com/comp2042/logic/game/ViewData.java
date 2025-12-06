@@ -1,4 +1,4 @@
-package com.comp2042;
+package com.comp2042.logic.game;
 
 public final class ViewData { //ViewData is an immutable data container that stores everything
 

@@ -1,4 +1,4 @@
-package com.comp2042;
+package com.comp2042.logic.game;
 
 public final class ClearRow { //This class is used to return the results of clearing rows
 

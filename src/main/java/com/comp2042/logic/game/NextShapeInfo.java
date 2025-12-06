@@ -1,4 +1,4 @@
-package com.comp2042;
+package com.comp2042.logic.game;
 
 public final class NextShapeInfo { // This immutable data class stores information about the next shape in the game
 

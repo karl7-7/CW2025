@@ -1,4 +1,4 @@
-package com.comp2042;
+package com.comp2042.logic.game;
 
 public final class DownData { //an immutable class used to return multiple pieces of info after a brick moves down
     private final ClearRow clearRow; //information about cleared rows

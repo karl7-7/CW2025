@@ -1,4 +1,4 @@
-package com.comp2042;
+package com.comp2042.events;
 
 public final class MoveEvent { // This is an immutable data class that represents an action or command triggered in the game
     private final EventType eventType; //describes the type of action
