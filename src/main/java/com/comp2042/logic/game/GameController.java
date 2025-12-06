@@ -22,5 +22,6 @@ public class GameController {
         c.setEventListener(coordinator);
         c.initGameView(board.getBoardMatrix(), board.getViewData());
         c.bindScore(service.getScore().scoreProperty());
+
     }
 }

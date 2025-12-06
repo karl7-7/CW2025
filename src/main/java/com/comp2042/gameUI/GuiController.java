@@ -5,6 +5,7 @@ import com.comp2042.events.EventType;
 import com.comp2042.events.MoveEvent;
 import com.comp2042.input.InputEventListener;
 import com.comp2042.logic.game.DownData;
+import com.comp2042.logic.game.Score;
 import com.comp2042.logic.game.ViewData;
 import javafx.animation.Timeline;
 import javafx.beans.property.BooleanProperty;
@@ -16,16 +17,20 @@ import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
-
+import javafx.scene.control.Label;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
+import javafx.beans.property.SimpleStringProperty;
 
 public class GuiController implements Initializable { // This class is the controller for the JavaFX GUI
 
     @FXML
     private GridPane gamePanel;
+
+    @FXML
+    private Label scoreLabel;
 
     @FXML
     private Group groupNotification;
@@ -106,7 +111,12 @@ public class GuiController implements Initializable { // This class is the contr
     }
 
     public void bindScore(IntegerProperty integerProperty) {
-
+        if (scoreLabel != null) {
+            scoreLabel.textProperty().bind(
+                    // Create a StringBinding to format the output
+                    new SimpleStringProperty("Score: ").concat(integerProperty.asString())
+            );
+        }
     }
 
     public void refreshGameBackground(int[][] boardMatrix) {

@@ -16,6 +16,7 @@
             <GridPane fx:id="gamePanel" hgap="1" vgap="1" layoutY="30" layoutX="40"/>
         </center>
     </BorderPane>
+    <Label fx:id="scoreLabel" text="Score: 0" layoutX="10" layoutY="10" style="-fx-font-size: 16px; -fx-text-fill: white;"/>
 
     <Group fx:id="groupNotification" layoutX="14" layoutY="203"> <!-- Group is a container component that serves as a way to group multiple nodes together -->
         <VBox alignment="CENTER"> <!-- A VBox is a layout pane that arranges its child nodes in a single vertical column, stacking them from top to bottom -->
