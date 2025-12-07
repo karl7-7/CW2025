@@ -12,7 +12,7 @@
       xmlns:fx="http://javafx.com/fxml"> <!-- Pane acts as a container for other nodes such as buttons, labels, text fields or even other panes -->
     <GridPane fx:id="brickPanel" vgap="1" hgap="1"/> <!-- GridPane is a layout pane that arranges its child nodes in a flexible grid of rows and columns -->
     <BorderPane styleClass="gameBoard" fx:id="gameBoard"> <!-- BorderPane is a layout pane that arranges its child nodes into 5 distinct regions: top, bottom, left, right, and center -->
-        <center>
+        <center> <!-- change borderpain styleclass to the root and have gameboard be a borderpain inside it -->
             <GridPane fx:id="gamePanel" hgap="1" vgap="1" layoutY="30" layoutX="40"/>
         </center>
     </BorderPane>
