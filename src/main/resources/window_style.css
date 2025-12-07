@@ -1,3 +1,5 @@
+// CW2025/src/main/resources/window_style.css
+
 .root {
     -fx-background-image: url("background_image.png");
 }
@@ -87,4 +89,55 @@
         /* 5. Pixelated Text Shadow (Optional - adds depth/readability) */
         -fx-effect: dropshadow(two-pass-box, rgba(0, 0, 0, 0.4), 1, 0.0, 1, 1);
     }
-}
+
+    /* --- Pause Menu Styles --- */
+
+    /* 1. The Overlay: Covers the entire game area */
+    .menu-overlay-dark {
+        -fx-background-color: rgba(0, 0, 0, 0.75); /* Semi-transparent black */
+        -fx-alignment: center; /* Center the VBox contents (Label and Buttons) */
+
+        /* Crucial: Make the VBox fill the entire Pane */
+        /* Removed large preferred sizes, now handled by AnchorPane in FXML */
+        /*-fx-pref-width: 10000; */
+        /*-fx-pref-height: 10000;*/
+    }
+
+    /* 2. Menu Title */
+    .menu-title {
+        -fx-font-family: "Let's go Digital";
+        -fx-font-size: 64px;
+        -fx-text-fill: white;
+        -fx-padding: 0 0 40px 0; /* Add space below the title */
+        -fx-effect: dropshadow(three-pass-box, black, 10, 0.5, 3, 3);
+    }
+
+    /* 3. Standard Button */
+    .menu-button {
+        -fx-font-family: "Let's go Digital";
+        -fx-font-size: 24px;
+        -fx-text-fill: #CCCCCC; /* Light gray text */
+        -fx-background-color: #333333; /* Dark background */
+        -fx-border-color: #888888;
+        -fx-border-width: 2px;
+        -fx-padding: 8px 30px;
+        -fx-pref-width: 300px;
+    }
+
+    /* 4. Primary (Resume) Button */
+    .menu-button-primary {
+        -fx-font-family: "Let's go Digital";
+        -fx-font-size: 24px;
+        -fx-text-fill: white;
+        -fx-background-color: #008800; /* Green highlight */
+        -fx-border-color: #00FF00;
+        -fx-border-width: 2px;
+        -fx-padding: 8px 30px;
+        -fx-pref-width: 300px;
+    }
+
+    .menu-button:hover, .menu-button-primary:hover {
+        -fx-cursor: hand;
+        -fx-scale-x: 1.05;
+        -fx-scale-y: 1.05;
+    }

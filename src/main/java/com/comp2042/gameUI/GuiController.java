@@ -1,4 +1,3 @@
-// language: java
 package com.comp2042.gameUI;
 
 import com.comp2042.events.EventSource;
@@ -25,11 +24,15 @@ import java.util.ResourceBundle;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.layout.VBox;
 
 public class GuiController implements Initializable {
 
     @FXML
     private GridPane gamePanel;
+
+    @FXML
+    private VBox pauseMenu;
 
     @FXML
     private Label scoreLabel;
@@ -91,6 +94,13 @@ public class GuiController implements Initializable {
 
         gameOverPanel.setVisible(false);
 
+        if (pauseMenu != null) {
+            // Menu is visible when isPause is TRUE
+            pauseMenu.visibleProperty().bind(isPause);
+            // Menu is only manageable when game is NOT over
+            pauseMenu.disableProperty().bind(isGameOver);
+        }
+
         // bind level label text to internal property
         if (levelLabel != null) {
             levelLabel.textProperty().bind(
@@ -100,8 +110,14 @@ public class GuiController implements Initializable {
     }
 
     private void onKeyPressed(KeyEvent keyEvent) {
-        if (keyEvent.getCode().toString().equals("N")) {
+        String code = keyEvent.getCode().toString();
+        if (code.equals("N")) {
             newGame(null);
+            keyEvent.consume();
+            return;
+        }
+        if (code.equals("P")) {
+            pauseGame(null);
             keyEvent.consume();
             return;
         }
@@ -175,6 +191,10 @@ public class GuiController implements Initializable {
     }
 
     public void pauseGame(ActionEvent actionEvent) {
+        if (isGameOver.get()) {
+            return;
+        }
+
         boolean paused = isPause.get();
         if (paused) {
             timelineManager.start();
