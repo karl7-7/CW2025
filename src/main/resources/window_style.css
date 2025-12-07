@@ -65,8 +65,26 @@
 }
 
 .scoreClass{
-    -fx-font-family: "Let's go Digital";
-    -fx-font-size: 38;
-    -fx-fill: yellow;
-    -fx-text-fill: yellow;
+    /* Font and Color */
+        -fx-font-family: "Let's go Digital";
+    /* 1. Font: Use a true pixel font or "Let's go Digital" as a fallback */
+        -fx-font-size: 38px;
+        -fx-font-weight: bold;
+
+        /* 2. Text Color: Dark on Light */
+        -fx-text-fill: #1A1A1A; /* Very dark gray/black to simulate the pixels */
+
+        /* 3. Background: The classic 'screen' color */
+        -fx-background-color: #A7C291; /* A medium, classic Game Boy green */
+        -fx-background-insets: 0;
+
+        /* 4. Padding and Border */
+        -fx-padding: 4px 10px 4px 10px;
+        -fx-border-color: #58694C; /* Darker green/gray border for contrast */
+        -fx-border-width: 3px;     /* A chunky border is key for the 8-bit look */
+        -fx-border-radius: 4px;    /* Slight curve, but keep it mostly blocky */
+
+        /* 5. Pixelated Text Shadow (Optional - adds depth/readability) */
+        -fx-effect: dropshadow(two-pass-box, rgba(0, 0, 0, 0.4), 1, 0.0, 1, 1);
+    }
 }

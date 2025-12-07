@@ -21,7 +21,7 @@ public class GameController {
         board.createNewBrick();
         c.setEventListener(coordinator);
         c.initGameView(board.getBoardMatrix(), board.getViewData());
-        c.bindScore(service.getScore().scoreProperty());
+        c.bindScoreAndLevel(service.getScore().scoreProperty());
 
     }
 }

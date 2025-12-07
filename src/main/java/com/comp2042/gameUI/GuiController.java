@@ -1,3 +1,4 @@
+// language: java
 package com.comp2042.gameUI;
 
 import com.comp2042.events.EventSource;
@@ -11,6 +12,7 @@ import javafx.animation.Timeline;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -24,13 +26,16 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import javafx.beans.property.SimpleStringProperty;
 
-public class GuiController implements Initializable { // This class is the controller for the JavaFX GUI
+public class GuiController implements Initializable {
 
     @FXML
     private GridPane gamePanel;
 
     @FXML
     private Label scoreLabel;
+
+    @FXML
+    private Label levelLabel;
 
     @FXML
     private Group groupNotification;
@@ -51,12 +56,14 @@ public class GuiController implements Initializable { // This class is the contr
     private final BooleanProperty isPause = new SimpleBooleanProperty();
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
 
+    // internal level property
+    private final SimpleIntegerProperty levelProperty = new SimpleIntegerProperty(1);
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         renderer = new GameViewRenderer(gamePanel, brickPanel);
         notificationManager = new NotificationManager(groupNotification);
 
-        // down processor uses the current eventListener and returns DownData (delegated to GameController)
         Function<MoveEvent, DownData> downProcessor = (moveEvent) -> {
             if (eventListener == null) return null;
             return eventListener.onDownEvent(moveEvent);
@@ -67,7 +74,6 @@ public class GuiController implements Initializable { // This class is the contr
                 (BooleanSupplier) isGameOver::get,
                 downProcessor);
 
-        // timeline drives DOWN events via same processor
         timelineManager = new TimelineManager(moveEvent -> {
             if (!isPause.get() && !isGameOver.get()) {
                 DownData dd = downProcessor.apply(moveEvent);
@@ -79,16 +85,21 @@ public class GuiController implements Initializable { // This class is the contr
             gamePanel.requestFocus();
         });
 
-        // key handling
         gamePanel.setFocusTraversable(true);
         gamePanel.requestFocus();
         gamePanel.setOnKeyPressed(this::onKeyPressed);
 
         gameOverPanel.setVisible(false);
+
+        // bind level label text to internal property
+        if (levelLabel != null) {
+            levelLabel.textProperty().bind(
+                    new SimpleStringProperty("Level: ").concat(levelProperty.asString())
+            );
+        }
     }
 
     private void onKeyPressed(KeyEvent keyEvent) {
-        // 'N' handled here to always start new game
         if (keyEvent.getCode().toString().equals("N")) {
             newGame(null);
             keyEvent.consume();
@@ -98,13 +109,11 @@ public class GuiController implements Initializable { // This class is the contr
         inputHandler.handleKey(keyEvent);
     }
 
-    // Called by GameController on construction
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
         this.inputHandler.setEventListener(eventListener);
     }
 
-    // Called by GameController to initialize visuals
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         renderer.initGameView(boardMatrix, brick);
         timelineManager.start();
@@ -113,10 +122,32 @@ public class GuiController implements Initializable { // This class is the contr
     public void bindScore(IntegerProperty integerProperty) {
         if (scoreLabel != null) {
             scoreLabel.textProperty().bind(
-                    // Create a StringBinding to format the output
                     new SimpleStringProperty("Score: ").concat(integerProperty.asString())
             );
         }
+    }
+
+    // new combined binder: binds score label, computes level from score and adjusts timeline speed
+    public void bindScoreAndLevel(IntegerProperty scoreProperty) {
+        bindScore(scoreProperty);
+
+        // initial timeline period uses TimelineManager default (400ms)
+        scoreProperty.addListener((obs, oldVal, newVal) -> {
+            int score = newVal.intValue();
+            int newLevel = Math.min(20, 1 + score / 50);
+            if (levelProperty.get() != newLevel) {
+                levelProperty.set(newLevel);
+                // arithmetic speed increase: reduce period by 18ms per level (from 400ms)
+                long newPeriod = Math.max(50, 400 - (newLevel - 1) * 18L);
+                timelineManager.setPeriodMillis(newPeriod);
+            }
+        });
+
+        // initialize level from current score value (in case score != 0)
+        int initialLevel = Math.min(20, 1 + scoreProperty.get() / 50);
+        levelProperty.set(initialLevel);
+        long initialPeriod = Math.max(50, 400 - (initialLevel - 1) * 18L);
+        timelineManager.setPeriodMillis(initialPeriod);
     }
 
     public void refreshGameBackground(int[][] boardMatrix) {
@@ -124,7 +155,6 @@ public class GuiController implements Initializable { // This class is the contr
             renderer.refreshGameBackground(boardMatrix);
         }
     }
-    //
 
     public void gameOver() {
         timelineManager.stop();
