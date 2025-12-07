@@ -49,6 +49,9 @@ public class GuiController implements Initializable {
     @FXML
     private GameOverPanel gameOverPanel;
 
+    @FXML
+    private VBox startMenuContainer; // NEW: Reference to the menu container
+
     private InputEventListener eventListener;
 
     private GameViewRenderer renderer;
@@ -109,6 +112,12 @@ public class GuiController implements Initializable {
         }
     }
 
+    public void onStartGame(ActionEvent actionEvent) {
+        startMenuContainer.setVisible(false);
+        timelineManager.start();
+        gamePanel.requestFocus();
+    }
+
     private void onKeyPressed(KeyEvent keyEvent) {
         String code = keyEvent.getCode().toString();
         if (code.equals("N")) {
@@ -132,7 +141,8 @@ public class GuiController implements Initializable {
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         renderer.initGameView(boardMatrix, brick);
-        timelineManager.start();
+        // REMOVED: timelineManager.start();
+        // We removed the auto-start so the game waits for the menu button.
     }
 
     public void bindScore(IntegerProperty integerProperty) {
