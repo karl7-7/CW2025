@@ -1,30 +1,27 @@
 package com.comp2042.gameUI;
 
-import com.comp2042.events.EventSource;
-import com.comp2042.events.EventType;
 import com.comp2042.events.MoveEvent;
 import com.comp2042.input.InputEventListener;
 import com.comp2042.logic.game.DownData;
-import com.comp2042.logic.game.Score;
 import com.comp2042.logic.game.ViewData;
-import javafx.animation.Timeline;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
+
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.layout.VBox;
 
 public class GuiController implements Initializable {
 
@@ -33,6 +30,12 @@ public class GuiController implements Initializable {
 
     @FXML
     private VBox pauseMenu;
+
+    @FXML
+    private VBox startMenuContainer;
+
+    @FXML
+    private VBox controlsOverlay;
 
     @FXML
     private Label scoreLabel;
@@ -49,11 +52,7 @@ public class GuiController implements Initializable {
     @FXML
     private GameOverPanel gameOverPanel;
 
-    @FXML
-    private VBox startMenuContainer; // NEW: Reference to the menu container
-
     private InputEventListener eventListener;
-
     private GameViewRenderer renderer;
     private NotificationManager notificationManager;
     private TimelineManager timelineManager;
@@ -61,9 +60,9 @@ public class GuiController implements Initializable {
 
     private final BooleanProperty isPause = new SimpleBooleanProperty();
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
-
-    // internal level property
     private final SimpleIntegerProperty levelProperty = new SimpleIntegerProperty(1);
+
+    private VBox previousMenu;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -97,18 +96,36 @@ public class GuiController implements Initializable {
 
         gameOverPanel.setVisible(false);
 
+        // CHANGE 1: Removed visibleProperty().bind(isPause) to allow manual control
         if (pauseMenu != null) {
-            // Menu is visible when isPause is TRUE
-            pauseMenu.visibleProperty().bind(isPause);
-            // Menu is only manageable when game is NOT over
             pauseMenu.disableProperty().bind(isGameOver);
         }
 
-        // bind level label text to internal property
         if (levelLabel != null) {
             levelLabel.textProperty().bind(
                     new SimpleStringProperty("Level: ").concat(levelProperty.asString())
             );
+        }
+    }
+
+    public void showControls(ActionEvent actionEvent) {
+        if (startMenuContainer.isVisible()) {
+            previousMenu = startMenuContainer;
+        } else if (pauseMenu.isVisible()) {
+            previousMenu = pauseMenu;
+        } else {
+            return;
+        }
+
+        // Now this works because pauseMenu is not bound
+        previousMenu.setVisible(false);
+        controlsOverlay.setVisible(true);
+    }
+
+    public void closeControls(ActionEvent actionEvent) {
+        controlsOverlay.setVisible(false);
+        if (previousMenu != null) {
+            previousMenu.setVisible(true);
         }
     }
 
@@ -120,6 +137,11 @@ public class GuiController implements Initializable {
 
     private void onKeyPressed(KeyEvent keyEvent) {
         String code = keyEvent.getCode().toString();
+
+        if (controlsOverlay != null && controlsOverlay.isVisible()) {
+            return;
+        }
+
         if (code.equals("N")) {
             newGame(null);
             keyEvent.consume();
@@ -141,8 +163,6 @@ public class GuiController implements Initializable {
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         renderer.initGameView(boardMatrix, brick);
-        // REMOVED: timelineManager.start();
-        // We removed the auto-start so the game waits for the menu button.
     }
 
     public void bindScore(IntegerProperty integerProperty) {
@@ -153,23 +173,17 @@ public class GuiController implements Initializable {
         }
     }
 
-    // new combined binder: binds score label, computes level from score and adjusts timeline speed
     public void bindScoreAndLevel(IntegerProperty scoreProperty) {
         bindScore(scoreProperty);
-
-        // initial timeline period uses TimelineManager default (400ms)
         scoreProperty.addListener((obs, oldVal, newVal) -> {
             int score = newVal.intValue();
             int newLevel = Math.min(20, 1 + score / 50);
             if (levelProperty.get() != newLevel) {
                 levelProperty.set(newLevel);
-                // arithmetic speed increase: reduce period by 18ms per level (from 400ms)
                 long newPeriod = Math.max(50, 400 - (newLevel - 1) * 18L);
                 timelineManager.setPeriodMillis(newPeriod);
             }
         });
-
-        // initialize level from current score value (in case score != 0)
         int initialLevel = Math.min(20, 1 + scoreProperty.get() / 50);
         levelProperty.set(initialLevel);
         long initialPeriod = Math.max(50, 400 - (initialLevel - 1) * 18L);
@@ -197,21 +211,33 @@ public class GuiController implements Initializable {
         gamePanel.requestFocus();
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
+
+        // CHANGE 2: Manually hide pauseMenu
+        if (pauseMenu != null) pauseMenu.setVisible(false);
+
         timelineManager.start();
     }
 
     public void pauseGame(ActionEvent actionEvent) {
+        if (controlsOverlay != null && controlsOverlay.isVisible()) return;
+
         if (isGameOver.get()) {
             return;
         }
 
         boolean paused = isPause.get();
         if (paused) {
+            // Unpause
             timelineManager.start();
             isPause.setValue(false);
+            // CHANGE 3: Manually hide pauseMenu
+            if (pauseMenu != null) pauseMenu.setVisible(false);
         } else {
+            // Pause
             timelineManager.stop();
             isPause.setValue(true);
+            // CHANGE 4: Manually show pauseMenu
+            if (pauseMenu != null) pauseMenu.setVisible(true);
         }
         gamePanel.requestFocus();
     }

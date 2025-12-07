@@ -17,12 +17,12 @@
         </center>
     </BorderPane>
 
-    <VBox layoutX="320" layoutY="230" spacing="10">
+    <VBox layoutX="320" layoutY="150" spacing="20">
         <Label fx:id="scoreLabel" text="Score: 0" styleClass="scoreClass"/>
         <Label fx:id="levelLabel" text="Level: 1" styleClass="scoreClass"/>
     </VBox>
 
-    <Group fx:id="groupNotification" layoutX="14" layoutY="203">
+    <Group fx:id="groupNotification" layoutX="150" layoutY="203">
         <VBox alignment="CENTER">
             <GameOverPanel fx:id="gameOverPanel"/>
         </VBox>
@@ -35,11 +35,9 @@
           visible="false">
 
         <Label text="PAUSED" styleClass="menu-title"/>
-
         <Button text="RESUME" onAction="#pauseGame" styleClass="menu-button-primary"/>
-
         <Button text="NEW GAME" onAction="#newGame" styleClass="menu-button"/>
-
+        <Button text="CONTROLS" onAction="#showControls" styleClass="menu-button"/>
     </VBox>
 
     <VBox fx:id="startMenuContainer" alignment="CENTER" spacing="20"
@@ -48,6 +46,26 @@
 
         <Label text="TETRIS JFX" styleClass="scoreClass" style="-fx-font-size: 50px; -fx-text-fill: yellow;"/>
         <Button text="START GAME" onAction="#onStartGame" styleClass="ipad-dark-grey"/>
+        <Button text="CONTROLS" onAction="#showControls" styleClass="ipad-dark-grey"/>
+    </VBox>
+
+    <VBox fx:id="controlsOverlay"
+          styleClass="menu-overlay-dark"
+          alignment="CENTER" spacing="10"
+          prefWidth="600" prefHeight="510"
+          visible="false">
+
+        <Label text="CONTROLS" styleClass="menu-title" style="-fx-font-size: 50px; -fx-padding: 0 0 10 0;"/>
+
+        <VBox spacing="8" alignment="CENTER">
+            <Label text="Move: Arrow Keys / WASD" styleClass="scoreClass" style="-fx-text-fill: white; -fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 22px;"/>
+            <Label text="Rotate: Up / W" styleClass="scoreClass" style="-fx-text-fill: white; -fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 22px;"/>
+            <Label text="Drop: Down / S" styleClass="scoreClass" style="-fx-text-fill: white; -fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 22px;"/>
+            <Label text="Pause: P" styleClass="scoreClass" style="-fx-text-fill: white; -fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 22px;"/>
+            <Label text="New Game: N" styleClass="scoreClass" style="-fx-text-fill: white; -fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 22px;"/>
+        </VBox>
+
+        <Button text="BACK" onAction="#closeControls" styleClass="menu-button"/>
     </VBox>
 
     <stylesheets>
