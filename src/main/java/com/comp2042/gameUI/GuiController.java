@@ -106,6 +106,22 @@ public class GuiController implements Initializable {
                     new SimpleStringProperty("Level: ").concat(levelProperty.asString())
             );
         }
+
+
+    }
+
+    public void goToMainMenu(ActionEvent actionEvent) {
+        // 1. Stop the game loop
+        timelineManager.stop();
+
+        // 2. Hide the Pause Menu
+        if (pauseMenu != null) pauseMenu.setVisible(false);
+
+        // 3. Show the Start Menu
+        if (startMenuContainer != null) startMenuContainer.setVisible(true);
+
+        // 4. Reset pause state so the game isn't stuck in "paused" mode logic
+        isPause.setValue(false);
     }
 
     public void showControls(ActionEvent actionEvent) {

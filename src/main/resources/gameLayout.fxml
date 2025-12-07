@@ -38,6 +38,8 @@
         <Button text="RESUME" onAction="#pauseGame" styleClass="menu-button-primary"/>
         <Button text="NEW GAME" onAction="#newGame" styleClass="menu-button"/>
         <Button text="CONTROLS" onAction="#showControls" styleClass="menu-button"/>
+
+        <Button text="MAIN MENU" onAction="#goToMainMenu" styleClass="menu-button"/>
     </VBox>
 
     <VBox fx:id="startMenuContainer" alignment="CENTER" spacing="20"
