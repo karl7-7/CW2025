@@ -23,7 +23,7 @@ public class Main extends Application {
         GuiController c = fxmlLoader.getController(); // getController() retrieves the controller associated with the FXML
 
         primaryStage.setTitle("TetrisJFX"); // set the title of the window
-        Scene scene = new Scene(root, 300, 510); // create a scene with the root node and specified dimensions
+        Scene scene = new Scene(root, 600, 510); // create a scene with the root node and specified dimensions
         primaryStage.setScene(scene); // set the scene on the primary stage
         primaryStage.show(); // show() makes the window visible
         new GameController(c); // Create a new GameController instance, passing the GuiController

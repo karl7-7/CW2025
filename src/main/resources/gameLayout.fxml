@@ -8,7 +8,7 @@
 
 <Pane fx:controller="com.comp2042.gameUI.GuiController"
       xmlns:fx="http://javafx.com/fxml"
-      prefWidth="300" prefHeight="510">
+      prefWidth="600" prefHeight="510">
 
     <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
     <BorderPane styleClass="gameBoard" fx:id="gameBoard">
@@ -17,7 +17,7 @@
         </center>
     </BorderPane>
 
-    <VBox layoutX="15" layoutY="430" spacing="10">
+    <VBox layoutX="320" layoutY="230" spacing="10">
         <Label fx:id="scoreLabel" text="Score: 0" styleClass="scoreClass"/>
         <Label fx:id="levelLabel" text="Level: 1" styleClass="scoreClass"/>
     </VBox>
@@ -31,7 +31,7 @@
     <VBox fx:id="pauseMenu"
           styleClass="menu-overlay-dark"
           alignment="CENTER" spacing="15"
-          prefWidth="300" prefHeight="510"
+          prefWidth="600" prefHeight="510"
           visible="false">
 
         <Label text="PAUSED" styleClass="menu-title"/>
@@ -43,7 +43,7 @@
     </VBox>
 
     <VBox fx:id="startMenuContainer" alignment="CENTER" spacing="20"
-          prefWidth="300" prefHeight="510" layoutX="0" layoutY="0"
+          prefWidth="600" prefHeight="510" layoutX="0" layoutY="0"
           style="-fx-background-color: #232723;">
 
         <Label text="TETRIS JFX" styleClass="scoreClass" style="-fx-font-size: 50px; -fx-text-fill: yellow;"/>
