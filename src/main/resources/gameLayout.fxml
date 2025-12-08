@@ -44,8 +44,7 @@
 
     <VBox fx:id="startMenuContainer" alignment="CENTER" spacing="20"
           prefWidth="600" prefHeight="510" layoutX="0" layoutY="0"
-          style="-fx-background-color: #232723;">
-
+          styleClass="start-menu">
         <Label text="TETRIS JFX" styleClass="scoreClass" style="-fx-font-size: 50px; -fx-text-fill: yellow;"/>
         <Button text="START GAME" onAction="#onStartGame" styleClass="ipad-dark-grey"/>
         <Button text="CONTROLS" onAction="#showControls" styleClass="ipad-dark-grey"/>

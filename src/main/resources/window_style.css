@@ -129,3 +129,8 @@
     -fx-text-fill: #FFD700; /* Gold */
     -fx-effect: dropshadow(one-pass-box, black, 2, 1, 0, 0);
 }
+.start-menu {
+    -fx-background-color: linear-gradient(to bottom, #0f0c29, #302b63, #24243e); /* show the same app background as the rest of the UI */
+    -fx-alignment: center;
+
+}
