@@ -22,6 +22,10 @@
         <Label fx:id="levelLabel" text="Level: 1" styleClass="scoreClass"/>
     </VBox>
 
+    <Group fx:id="groupNotification" layoutX="150" layoutY="203">
+        <VBox alignment="CENTER"/>
+    </Group>
+
     <VBox fx:id="pauseMenu"
           styleClass="menu-overlay-dark"
           alignment="CENTER" spacing="15"
