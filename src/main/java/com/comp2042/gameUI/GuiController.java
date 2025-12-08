@@ -27,25 +27,27 @@ public class GuiController implements Initializable {
 
     @FXML private GridPane gamePanel;
     @FXML private GridPane brickPanel;
+
+    // NEW: Inject the Hold and Next panels from FXML
+    @FXML private GridPane nextPanel;
+    @FXML private GridPane holdPanel;
+
     @FXML private VBox pauseMenu;
     @FXML private VBox startMenuContainer;
     @FXML private VBox controlsOverlay;
     @FXML private VBox howToPlayOverlay;
-
-    @FXML private VBox gameOverMenu; // NEW: Game Over Menu
+    @FXML private VBox gameOverMenu;
 
     @FXML private Label scoreLabel;
     @FXML private Label levelLabel;
     @FXML private Group groupNotification;
-
-    // Removed old GameOverPanel injection
-    // @FXML private GameOverPanel gameOverPanel;
 
     private InputEventListener eventListener;
     private GameViewRenderer renderer;
     private NotificationManager notificationManager;
     private TimelineManager timelineManager;
     private InputHandler inputHandler;
+    private SoundOrganiser soundOrganiser;
 
     private final BooleanProperty isPause = new SimpleBooleanProperty();
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
@@ -56,7 +58,15 @@ public class GuiController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         renderer = new GameViewRenderer(gamePanel, brickPanel);
+
+        // CRITICAL FIX: Connect the panels to the renderer so it can draw on them
+        renderer.setSidePanels(nextPanel, holdPanel);
+
         notificationManager = new NotificationManager(groupNotification);
+
+        // Initialize Music
+        soundOrganiser = new SoundOrganiser();
+        soundOrganiser.playBackgroundMusic("music.mp3");
 
         Function<MoveEvent, DownData> downProcessor = (moveEvent) -> {
             if (eventListener == null) return null;
@@ -83,7 +93,6 @@ public class GuiController implements Initializable {
         gamePanel.requestFocus();
         gamePanel.setOnKeyPressed(this::onKeyPressed);
 
-        // Bind visibility
         if (pauseMenu != null) pauseMenu.disableProperty().bind(isGameOver);
         if (gameOverMenu != null) gameOverMenu.visibleProperty().bind(isGameOver);
 
@@ -94,12 +103,12 @@ public class GuiController implements Initializable {
         }
     }
 
+    // --- NAVIGATION METHODS ---
     public void goToMainMenu(ActionEvent actionEvent) {
         timelineManager.stop();
         if (pauseMenu != null) pauseMenu.setVisible(false);
         if (startMenuContainer != null) startMenuContainer.setVisible(true);
-
-        // Reset Game Over state to hide the menu
+        if (gameOverMenu != null) gameOverMenu.setVisible(false);
         isGameOver.set(false);
         isPause.setValue(false);
     }
@@ -132,11 +141,10 @@ public class GuiController implements Initializable {
 
     public void onStartGame(ActionEvent actionEvent) {
         startMenuContainer.setVisible(false);
-        newGame(null); // Start a fresh game
+        newGame(null);
     }
 
     private void onKeyPressed(KeyEvent keyEvent) {
-        // Block inputs if overlays are open
         if ((controlsOverlay != null && controlsOverlay.isVisible()) ||
                 (howToPlayOverlay != null && howToPlayOverlay.isVisible())) {
             return;
@@ -186,18 +194,15 @@ public class GuiController implements Initializable {
 
     public void gameOver() {
         timelineManager.stop();
-        // This triggers the binding to show gameOverMenu
         isGameOver.setValue(Boolean.TRUE);
     }
 
     public void newGame(ActionEvent actionEvent) {
         timelineManager.stop();
         if (eventListener != null) eventListener.createNewGame();
-
         gamePanel.requestFocus();
         isPause.setValue(Boolean.FALSE);
-        isGameOver.setValue(Boolean.FALSE); // Hides gameOverMenu
-
+        isGameOver.setValue(Boolean.FALSE);
         if (pauseMenu != null) pauseMenu.setVisible(false);
         timelineManager.start();
     }
@@ -205,7 +210,6 @@ public class GuiController implements Initializable {
     public void pauseGame(ActionEvent actionEvent) {
         if ((controlsOverlay != null && controlsOverlay.isVisible()) ||
                 (howToPlayOverlay != null && howToPlayOverlay.isVisible())) return;
-
         if (isGameOver.get()) return;
 
         boolean paused = isPause.get();

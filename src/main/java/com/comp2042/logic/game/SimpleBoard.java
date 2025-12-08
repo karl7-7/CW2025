@@ -16,6 +16,10 @@ public class SimpleBoard implements Board {
     private Point currentOffset;
     private final Score score;
 
+    private Brick heldBrick;
+    private Brick currentBrickObj;
+    private boolean canHold = true;
+
     public SimpleBoard(int width, int height) {
         this.width = width;
         this.height = height;
@@ -82,6 +86,7 @@ public class SimpleBoard implements Board {
 
     @Override
     public boolean createNewBrick() {
+        canHold = true; // Reset hold permission
         Brick currentBrick = brickGenerator.getBrick();
         brickRotator.setBrick(currentBrick);
         currentOffset = new Point(4, 0); // Changed to 0 to spawn at very top
@@ -95,12 +100,31 @@ public class SimpleBoard implements Board {
 
     @Override
     public ViewData getViewData() {
-        // Updated to include getGhostY()
-        return new ViewData(brickRotator.getCurrentShape(),
+        return new ViewData(
+                brickRotator.getCurrentShape(),
                 (int) currentOffset.getX(),
                 (int) currentOffset.getY(),
                 brickGenerator.getNextBrick().getShapeMatrix().get(0),
-                getGhostY());
+                heldBrick != null ? heldBrick.getShapeMatrix().get(0) : null, // Pass held brick data
+                getGhostY() // Pass ghost Y
+        );
+    }
+
+    @Override
+    public void holdPiece() {
+        if (!canHold) return;
+
+        if (heldBrick == null) {
+            heldBrick = currentBrickObj;
+            createNewBrick();
+        } else {
+            Brick temp = currentBrickObj;
+            currentBrickObj = heldBrick;
+            heldBrick = temp;
+            brickRotator.setBrick(currentBrickObj);
+            currentOffset = new Point(4, 0);
+        }
+        canHold = false;
     }
 
     @Override
@@ -148,4 +172,6 @@ public class SimpleBoard implements Board {
         int y = getGhostY();
         currentOffset.setLocation(currentOffset.getX(), y);
     }
+
+
 }

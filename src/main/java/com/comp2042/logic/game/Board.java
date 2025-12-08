@@ -15,4 +15,6 @@ public interface Board {
 
     // NEW: Hard Drop
     void hardDrop();
+
+    void holdPiece(); // NEW;
 }

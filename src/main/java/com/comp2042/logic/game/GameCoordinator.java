@@ -46,4 +46,8 @@ public class GameCoordinator implements InputEventListener {
         service.newGame();
         gui.refreshGameBackground(service.getBoard().getBoardMatrix());
     }
+    @Override
+    public ViewData onHoldEvent(MoveEvent event) {
+        return service.holdPiece();
+    }
 }

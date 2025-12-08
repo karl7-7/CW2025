@@ -35,6 +35,10 @@ public class GameService {
         DownData dd = new DownData(clearRow, board.getViewData());
         return new MoveResult(dd, merged, gameOver);
     }
+    public ViewData holdPiece() {
+        board.holdPiece();
+        return board.getViewData();
+    }
 
     public ViewData moveLeft(MoveEvent event) {
         board.moveBrickLeft();

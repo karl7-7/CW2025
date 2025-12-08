@@ -77,6 +77,13 @@ public class InputHandler {
             renderer.refreshBrick(dd.getViewData());
             keyEvent.consume();
         }
+
+        if (code == KeyCode.C) {
+            ViewData v = eventListener.onHoldEvent(new MoveEvent(EventType.HOLD, EventSource.USER));
+            renderer.refreshBrick(v);
+            keyEvent.consume();
+            return;
+        }
     }
 
     private void handleScorePopup(DownData dd) {
