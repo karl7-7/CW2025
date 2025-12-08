@@ -16,6 +16,8 @@ public class GameViewRenderer
 
     private Rectangle[][] displayMatrix;
     private Rectangle[][] rectangles;
+    private Rectangle[][] ghostRectangles; // NEW: Ghost Rectangles
+
 
     public GameViewRenderer(GridPane gamePanel, GridPane brickPanel) {
         this.gamePanel = gamePanel;
@@ -33,25 +35,51 @@ public class GameViewRenderer
             }
         }
 
-        rectangles = new Rectangle[brick.getBrickData().length][brick.getBrickData()[0].length]; // Initialize rectangles for the current brick
+        // Initialize Real Bricks AND Ghost Bricks
+        int rows = brick.getBrickData().length;
+        int cols = brick.getBrickData()[0].length;
+        rectangles = new Rectangle[rows][cols];
+        ghostRectangles = new Rectangle[rows][cols];
 
-        for (int i = 0; i < brick.getBrickData().length; i++) { // Iterate through the brick data to create rectangles
-            for (int j = 0; j < brick.getBrickData()[i].length; j++) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                // Ghost Brick (Added first so it's behind)
+                Rectangle ghostRect = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                ghostRect.getStyleClass().add("brick-ghost"); // Base ghost style
+                ghostRectangles[i][j] = ghostRect;
+                brickPanel.add(ghostRect, j, i);
+
+                // Real Brick
                 Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
-                rectangle.setFill(getFillColor(brick.getBrickData()[i][j]));
+                setRectangleData(brick.getBrickData()[i][j], rectangle);
                 rectangles[i][j] = rectangle;
-                brickPanel.add(rectangle, j, i); // Add rectangle to the brick panel at the correct position
+                brickPanel.add(rectangle, j, i);
             }
         }
 
         updateBrickPanelPosition(brick);
     }
 
-    public void refreshBrick(ViewData brick) { // Refreshes the current brick's position and appearance
+    public void refreshBrick(ViewData brick) {
         updateBrickPanelPosition(brick);
-        for (int i = 0; i < brick.getBrickData().length; i++) { // Iterate through the brick data to update rectangles
+        for (int i = 0; i < brick.getBrickData().length; i++) {
             for (int j = 0; j < brick.getBrickData()[i].length; j++) {
-                setRectangleData(brick.getBrickData()[i][j], rectangles[i][j]);
+                int brickColor = brick.getBrickData()[i][j];
+
+                // Update Real Brick
+                setRectangleData(brickColor, rectangles[i][j]);
+
+                // Update Ghost Brick
+                if (brickColor != 0) {
+                    ghostRectangles[i][j].setVisible(true);
+                    // Move ghost rect relative to the real brick panel
+                    // Real brick is at (0,0) in local coords.
+                    // Ghost Y needs to be offset by: (ghostY - realY) * size
+                    int yOffset = (brick.getGhostY() - brick.getyPosition()) * (BRICK_SIZE + 1); // +1 for gap
+                    ghostRectangles[i][j].setTranslateY(yOffset);
+                } else {
+                    ghostRectangles[i][j].setVisible(false);
+                }
             }
         }
     }

@@ -12,7 +12,7 @@ import javafx.scene.input.KeyEvent;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
-public class InputHandler { //This class handles user keyboard input events
+public class InputHandler {
     private InputEventListener eventListener;
     private final GameViewRenderer renderer;
     private final NotificationManager notificationManager;
@@ -24,7 +24,7 @@ public class InputHandler { //This class handles user keyboard input events
                         NotificationManager notificationManager,
                         BooleanSupplier isPaused,
                         BooleanSupplier isGameOver,
-                        Function<MoveEvent, DownData> downProcessor) { // Constructor initialises the InputHandler with necessary components
+                        Function<MoveEvent, DownData> downProcessor) {
         this.renderer = renderer;
         this.notificationManager = notificationManager;
         this.isPaused = isPaused;
@@ -32,43 +32,56 @@ public class InputHandler { //This class handles user keyboard input events
         this.downProcessor = downProcessor;
     }
 
-    public void setEventListener(InputEventListener listener) { // Sets the event listener that will handle input events
+    public void setEventListener(InputEventListener listener) {
         this.eventListener = listener;
     }
 
-    public void handleKey(KeyEvent keyEvent) { // Processes a key event from the user
+    public void handleKey(KeyEvent keyEvent) {
         if (isPaused.getAsBoolean() || isGameOver.getAsBoolean()) {
             return;
         }
 
-        KeyCode code = keyEvent.getCode(); // Get the key code from the key event
+        KeyCode code = keyEvent.getCode();
         if (eventListener == null) return;
 
-        if (code == KeyCode.LEFT || code == KeyCode.A) { // If left arrow or 'A' key is pressed
+        if (code == KeyCode.LEFT || code == KeyCode.A) {
             ViewData v = eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER));
             renderer.refreshBrick(v);
             keyEvent.consume();
             return;
         }
-        if (code == KeyCode.RIGHT || code == KeyCode.D) { // If right arrow or 'D' key is pressed
+        if (code == KeyCode.RIGHT || code == KeyCode.D) {
             ViewData v = eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER));
             renderer.refreshBrick(v);
             keyEvent.consume();
             return;
         }
-        if (code == KeyCode.UP || code == KeyCode.W) { // If up arrow or 'W' key is pressed
+        if (code == KeyCode.UP || code == KeyCode.W) {
             ViewData v = eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER));
             renderer.refreshBrick(v);
             keyEvent.consume();
             return;
         }
-        if (code == KeyCode.DOWN || code == KeyCode.S) { // If down arrow or 'S' key is pressed
+        if (code == KeyCode.DOWN || code == KeyCode.S) {
             DownData dd = downProcessor.apply(new MoveEvent(EventType.DOWN, EventSource.USER));
-            if (dd != null && dd.getClearRow() != null && dd.getClearRow().getLinesRemoved() > 0) {
-                notificationManager.showScorePopup(dd.getClearRow().getScoreBonus());
-            }
-            renderer.refreshBrick(dd.getViewData()); // Refresh the brick view based on the down event
+            handleScorePopup(dd);
+            renderer.refreshBrick(dd.getViewData());
             keyEvent.consume();
+            return;
+        }
+
+        // NEW: Space Bar for Hard Drop
+        if (code == KeyCode.SPACE) {
+            DownData dd = downProcessor.apply(new MoveEvent(EventType.HARD_DROP, EventSource.USER));
+            handleScorePopup(dd);
+            renderer.refreshBrick(dd.getViewData());
+            keyEvent.consume();
+        }
+    }
+
+    private void handleScorePopup(DownData dd) {
+        if (dd != null && dd.getClearRow() != null && dd.getClearRow().getLinesRemoved() > 0) {
+            notificationManager.showScorePopup(dd.getClearRow().getScoreBonus());
         }
     }
 }
