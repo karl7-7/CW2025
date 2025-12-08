@@ -22,12 +22,6 @@
         <Label fx:id="levelLabel" text="Level: 1" styleClass="scoreClass"/>
     </VBox>
 
-    <Group fx:id="groupNotification" layoutX="150" layoutY="203">
-        <VBox alignment="CENTER">
-            <GameOverPanel fx:id="gameOverPanel"/>
-        </VBox>
-    </Group>
-
     <VBox fx:id="pauseMenu"
           styleClass="menu-overlay-dark"
           alignment="CENTER" spacing="15"
@@ -38,6 +32,16 @@
         <Button text="NEW GAME" onAction="#newGame" styleClass="menu-button"/>
         <Button text="CONTROLS" onAction="#showControls" styleClass="menu-button"/>
         <Button text="HOW TO PLAY" onAction="#showHowToPlay" styleClass="menu-button"/>
+        <Button text="MAIN MENU" onAction="#goToMainMenu" styleClass="menu-button"/>
+    </VBox>
+
+    <VBox fx:id="gameOverMenu"
+          styleClass="menu-overlay-dark"
+          alignment="CENTER" spacing="20"
+          prefWidth="600" prefHeight="510"
+          visible="false">
+        <Label text="GAME OVER" styleClass="gameOverStyle"/>
+        <Button text="RETRY" onAction="#newGame" styleClass="menu-button-primary"/>
         <Button text="MAIN MENU" onAction="#goToMainMenu" styleClass="menu-button"/>
     </VBox>
 

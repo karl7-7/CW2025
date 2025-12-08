@@ -30,11 +30,16 @@ public class GuiController implements Initializable {
     @FXML private VBox pauseMenu;
     @FXML private VBox startMenuContainer;
     @FXML private VBox controlsOverlay;
-    @FXML private VBox howToPlayOverlay; // NEW: How To Play Overlay
+    @FXML private VBox howToPlayOverlay;
+
+    @FXML private VBox gameOverMenu; // NEW: Game Over Menu
+
     @FXML private Label scoreLabel;
     @FXML private Label levelLabel;
     @FXML private Group groupNotification;
-    @FXML private GameOverPanel gameOverPanel;
+
+    // Removed old GameOverPanel injection
+    // @FXML private GameOverPanel gameOverPanel;
 
     private InputEventListener eventListener;
     private GameViewRenderer renderer;
@@ -78,11 +83,9 @@ public class GuiController implements Initializable {
         gamePanel.requestFocus();
         gamePanel.setOnKeyPressed(this::onKeyPressed);
 
-        gameOverPanel.setVisible(false);
-
-        if (pauseMenu != null) {
-            pauseMenu.disableProperty().bind(isGameOver);
-        }
+        // Bind visibility
+        if (pauseMenu != null) pauseMenu.disableProperty().bind(isGameOver);
+        if (gameOverMenu != null) gameOverMenu.visibleProperty().bind(isGameOver);
 
         if (levelLabel != null) {
             levelLabel.textProperty().bind(
@@ -91,12 +94,13 @@ public class GuiController implements Initializable {
         }
     }
 
-    // --- NAVIGATION METHODS ---
-
     public void goToMainMenu(ActionEvent actionEvent) {
         timelineManager.stop();
         if (pauseMenu != null) pauseMenu.setVisible(false);
         if (startMenuContainer != null) startMenuContainer.setVisible(true);
+
+        // Reset Game Over state to hide the menu
+        isGameOver.set(false);
         isPause.setValue(false);
     }
 
@@ -104,7 +108,6 @@ public class GuiController implements Initializable {
         if (startMenuContainer.isVisible()) previousMenu = startMenuContainer;
         else if (pauseMenu.isVisible()) previousMenu = pauseMenu;
         else return;
-
         previousMenu.setVisible(false);
         controlsOverlay.setVisible(true);
     }
@@ -114,17 +117,14 @@ public class GuiController implements Initializable {
         if (previousMenu != null) previousMenu.setVisible(true);
     }
 
-    // NEW: Show How To Play
     public void showHowToPlay(ActionEvent actionEvent) {
         if (startMenuContainer.isVisible()) previousMenu = startMenuContainer;
         else if (pauseMenu.isVisible()) previousMenu = pauseMenu;
         else return;
-
         previousMenu.setVisible(false);
         howToPlayOverlay.setVisible(true);
     }
 
-    // NEW: Close How To Play
     public void closeHowToPlay(ActionEvent actionEvent) {
         howToPlayOverlay.setVisible(false);
         if (previousMenu != null) previousMenu.setVisible(true);
@@ -132,12 +132,11 @@ public class GuiController implements Initializable {
 
     public void onStartGame(ActionEvent actionEvent) {
         startMenuContainer.setVisible(false);
-        timelineManager.start();
-        gamePanel.requestFocus();
+        newGame(null); // Start a fresh game
     }
 
     private void onKeyPressed(KeyEvent keyEvent) {
-        // Prevent key inputs if any overlay is open
+        // Block inputs if overlays are open
         if ((controlsOverlay != null && controlsOverlay.isVisible()) ||
                 (howToPlayOverlay != null && howToPlayOverlay.isVisible())) {
             return;
@@ -146,11 +145,8 @@ public class GuiController implements Initializable {
         String code = keyEvent.getCode().toString();
         if (code.equals("N")) { newGame(null); keyEvent.consume(); return; }
         if (code.equals("P")) { pauseGame(null); keyEvent.consume(); return; }
-
         inputHandler.handleKey(keyEvent);
     }
-
-    // --- GAME LOGIC ---
 
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
@@ -190,17 +186,18 @@ public class GuiController implements Initializable {
 
     public void gameOver() {
         timelineManager.stop();
-        gameOverPanel.setVisible(true);
+        // This triggers the binding to show gameOverMenu
         isGameOver.setValue(Boolean.TRUE);
     }
 
     public void newGame(ActionEvent actionEvent) {
         timelineManager.stop();
-        gameOverPanel.setVisible(false);
         if (eventListener != null) eventListener.createNewGame();
+
         gamePanel.requestFocus();
         isPause.setValue(Boolean.FALSE);
-        isGameOver.setValue(Boolean.FALSE);
+        isGameOver.setValue(Boolean.FALSE); // Hides gameOverMenu
+
         if (pauseMenu != null) pauseMenu.setVisible(false);
         timelineManager.start();
     }
