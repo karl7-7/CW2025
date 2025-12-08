@@ -25,32 +25,16 @@ import java.util.function.Function;
 
 public class GuiController implements Initializable {
 
-    @FXML
-    private GridPane gamePanel;
-
-    @FXML
-    private VBox pauseMenu;
-
-    @FXML
-    private VBox startMenuContainer;
-
-    @FXML
-    private VBox controlsOverlay;
-
-    @FXML
-    private Label scoreLabel;
-
-    @FXML
-    private Label levelLabel;
-
-    @FXML
-    private Group groupNotification;
-
-    @FXML
-    private GridPane brickPanel;
-
-    @FXML
-    private GameOverPanel gameOverPanel;
+    @FXML private GridPane gamePanel;
+    @FXML private GridPane brickPanel;
+    @FXML private VBox pauseMenu;
+    @FXML private VBox startMenuContainer;
+    @FXML private VBox controlsOverlay;
+    @FXML private VBox howToPlayOverlay; // NEW: How To Play Overlay
+    @FXML private Label scoreLabel;
+    @FXML private Label levelLabel;
+    @FXML private Group groupNotification;
+    @FXML private GameOverPanel gameOverPanel;
 
     private InputEventListener eventListener;
     private GameViewRenderer renderer;
@@ -96,7 +80,6 @@ public class GuiController implements Initializable {
 
         gameOverPanel.setVisible(false);
 
-        // CHANGE 1: Removed visibleProperty().bind(isPause) to allow manual control
         if (pauseMenu != null) {
             pauseMenu.disableProperty().bind(isGameOver);
         }
@@ -106,43 +89,45 @@ public class GuiController implements Initializable {
                     new SimpleStringProperty("Level: ").concat(levelProperty.asString())
             );
         }
-
-
     }
 
+    // --- NAVIGATION METHODS ---
+
     public void goToMainMenu(ActionEvent actionEvent) {
-        // 1. Stop the game loop
         timelineManager.stop();
-
-        // 2. Hide the Pause Menu
         if (pauseMenu != null) pauseMenu.setVisible(false);
-
-        // 3. Show the Start Menu
         if (startMenuContainer != null) startMenuContainer.setVisible(true);
-
-        // 4. Reset pause state so the game isn't stuck in "paused" mode logic
         isPause.setValue(false);
     }
 
     public void showControls(ActionEvent actionEvent) {
-        if (startMenuContainer.isVisible()) {
-            previousMenu = startMenuContainer;
-        } else if (pauseMenu.isVisible()) {
-            previousMenu = pauseMenu;
-        } else {
-            return;
-        }
+        if (startMenuContainer.isVisible()) previousMenu = startMenuContainer;
+        else if (pauseMenu.isVisible()) previousMenu = pauseMenu;
+        else return;
 
-        // Now this works because pauseMenu is not bound
         previousMenu.setVisible(false);
         controlsOverlay.setVisible(true);
     }
 
     public void closeControls(ActionEvent actionEvent) {
         controlsOverlay.setVisible(false);
-        if (previousMenu != null) {
-            previousMenu.setVisible(true);
-        }
+        if (previousMenu != null) previousMenu.setVisible(true);
+    }
+
+    // NEW: Show How To Play
+    public void showHowToPlay(ActionEvent actionEvent) {
+        if (startMenuContainer.isVisible()) previousMenu = startMenuContainer;
+        else if (pauseMenu.isVisible()) previousMenu = pauseMenu;
+        else return;
+
+        previousMenu.setVisible(false);
+        howToPlayOverlay.setVisible(true);
+    }
+
+    // NEW: Close How To Play
+    public void closeHowToPlay(ActionEvent actionEvent) {
+        howToPlayOverlay.setVisible(false);
+        if (previousMenu != null) previousMenu.setVisible(true);
     }
 
     public void onStartGame(ActionEvent actionEvent) {
@@ -152,25 +137,20 @@ public class GuiController implements Initializable {
     }
 
     private void onKeyPressed(KeyEvent keyEvent) {
+        // Prevent key inputs if any overlay is open
+        if ((controlsOverlay != null && controlsOverlay.isVisible()) ||
+                (howToPlayOverlay != null && howToPlayOverlay.isVisible())) {
+            return;
+        }
+
         String code = keyEvent.getCode().toString();
-
-        if (controlsOverlay != null && controlsOverlay.isVisible()) {
-            return;
-        }
-
-        if (code.equals("N")) {
-            newGame(null);
-            keyEvent.consume();
-            return;
-        }
-        if (code.equals("P")) {
-            pauseGame(null);
-            keyEvent.consume();
-            return;
-        }
+        if (code.equals("N")) { newGame(null); keyEvent.consume(); return; }
+        if (code.equals("P")) { pauseGame(null); keyEvent.consume(); return; }
 
         inputHandler.handleKey(keyEvent);
     }
+
+    // --- GAME LOGIC ---
 
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
@@ -183,9 +163,7 @@ public class GuiController implements Initializable {
 
     public void bindScore(IntegerProperty integerProperty) {
         if (scoreLabel != null) {
-            scoreLabel.textProperty().bind(
-                    new SimpleStringProperty("Score: ").concat(integerProperty.asString())
-            );
+            scoreLabel.textProperty().bind(new SimpleStringProperty("Score: ").concat(integerProperty.asString()));
         }
     }
 
@@ -207,9 +185,7 @@ public class GuiController implements Initializable {
     }
 
     public void refreshGameBackground(int[][] boardMatrix) {
-        if (renderer != null) {
-            renderer.refreshGameBackground(boardMatrix);
-        }
+        if (renderer != null) renderer.refreshGameBackground(boardMatrix);
     }
 
     public void gameOver() {
@@ -221,38 +197,28 @@ public class GuiController implements Initializable {
     public void newGame(ActionEvent actionEvent) {
         timelineManager.stop();
         gameOverPanel.setVisible(false);
-        if (eventListener != null) {
-            eventListener.createNewGame();
-        }
+        if (eventListener != null) eventListener.createNewGame();
         gamePanel.requestFocus();
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
-
-        // CHANGE 2: Manually hide pauseMenu
         if (pauseMenu != null) pauseMenu.setVisible(false);
-
         timelineManager.start();
     }
 
     public void pauseGame(ActionEvent actionEvent) {
-        if (controlsOverlay != null && controlsOverlay.isVisible()) return;
+        if ((controlsOverlay != null && controlsOverlay.isVisible()) ||
+                (howToPlayOverlay != null && howToPlayOverlay.isVisible())) return;
 
-        if (isGameOver.get()) {
-            return;
-        }
+        if (isGameOver.get()) return;
 
         boolean paused = isPause.get();
         if (paused) {
-            // Unpause
             timelineManager.start();
             isPause.setValue(false);
-            // CHANGE 3: Manually hide pauseMenu
             if (pauseMenu != null) pauseMenu.setVisible(false);
         } else {
-            // Pause
             timelineManager.stop();
             isPause.setValue(true);
-            // CHANGE 4: Manually show pauseMenu
             if (pauseMenu != null) pauseMenu.setVisible(true);
         }
         gamePanel.requestFocus();

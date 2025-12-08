@@ -33,12 +33,11 @@
           alignment="CENTER" spacing="15"
           prefWidth="600" prefHeight="510"
           visible="false">
-
         <Label text="PAUSED" styleClass="menu-title"/>
         <Button text="RESUME" onAction="#pauseGame" styleClass="menu-button-primary"/>
         <Button text="NEW GAME" onAction="#newGame" styleClass="menu-button"/>
         <Button text="CONTROLS" onAction="#showControls" styleClass="menu-button"/>
-
+        <Button text="HOW TO PLAY" onAction="#showHowToPlay" styleClass="menu-button"/>
         <Button text="MAIN MENU" onAction="#goToMainMenu" styleClass="menu-button"/>
     </VBox>
 
@@ -48,6 +47,7 @@
         <Label text="TETRIS JFX" styleClass="scoreClass" style="-fx-font-size: 50px; -fx-text-fill: yellow;"/>
         <Button text="START GAME" onAction="#onStartGame" styleClass="ipad-dark-grey"/>
         <Button text="CONTROLS" onAction="#showControls" styleClass="ipad-dark-grey"/>
+        <Button text="HOW TO PLAY" onAction="#showHowToPlay" styleClass="ipad-dark-grey"/>
     </VBox>
 
     <VBox fx:id="controlsOverlay"
@@ -55,9 +55,7 @@
           alignment="CENTER" spacing="10"
           prefWidth="600" prefHeight="510"
           visible="false">
-
         <Label text="CONTROLS" styleClass="menu-title" style="-fx-font-size: 50px; -fx-padding: 0 0 10 0;"/>
-
         <VBox spacing="8" alignment="CENTER">
             <Label text="Move: Arrow Keys / WASD" styleClass="scoreClass" style="-fx-text-fill: white; -fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 22px;"/>
             <Label text="Rotate: Up / W" styleClass="scoreClass" style="-fx-text-fill: white; -fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 22px;"/>
@@ -65,9 +63,40 @@
             <Label text="Pause: P" styleClass="scoreClass" style="-fx-text-fill: white; -fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 22px;"/>
             <Label text="New Game: N" styleClass="scoreClass" style="-fx-text-fill: white; -fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 22px;"/>
         </VBox>
-
         <Button text="BACK" onAction="#closeControls" styleClass="menu-button"/>
     </VBox>
+
+    <VBox fx:id="howToPlayOverlay"
+          styleClass="menu-overlay-dark"
+          alignment="CENTER" spacing="5"
+          prefWidth="600" prefHeight="510"
+          visible="false">
+
+        <Label text="HOW TO PLAY" styleClass="menu-title" style="-fx-font-size: 45px; -fx-padding: 0;"/>
+
+        <VBox spacing="2" alignment="CENTER">
+            <Label text="Move: Arrows/WASD | Hard Drop: Space" styleClass="scoreClass" style="-fx-text-fill: #e0e0e0; -fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 16px;"/>
+            <Label text="Game Over if blocks reach the top." styleClass="scoreClass" style="-fx-text-fill: #FF3333; -fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 16px;"/>
+
+            <Label text="------------------------" styleClass="scoreClass" style="-fx-text-fill: #8A2BE2; -fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 12px;"/>
+
+            <Label text="SCORING RULE" styleClass="scoreClass" style="-fx-text-fill: #00FFFF; -fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 20px;"/>
+            <Label text="Score = 50 x (Lines Cleared)²" styleClass="scoreClass" style="-fx-text-fill: white; -fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 16px;"/>
+            <Label text="(1 Line = 50pts, 4 Lines = 800pts!)" styleClass="scoreClass" style="-fx-text-fill: #aaaaaa; -fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 14px;"/>
+            <Label text="+2 Points for every Hard Drop" styleClass="scoreClass" style="-fx-text-fill: #aaaaaa; -fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 14px;"/>
+
+            <Label text="------------------------" styleClass="scoreClass" style="-fx-text-fill: #8A2BE2; -fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 12px;"/>
+
+            <Label text="LEVEL PROGRESSION" styleClass="scoreClass" style="-fx-text-fill: #00FFFF; -fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 20px;"/>
+            <Label text="Level Up every 50 Points" styleClass="scoreClass" style="-fx-text-fill: white; -fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 16px;"/>
+            <Label text="Blocks fall faster at higher levels." styleClass="scoreClass" style="-fx-text-fill: #aaaaaa; -fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 14px;"/>
+        </VBox>
+
+        <Button text="BACK" onAction="#closeHowToPlay" styleClass="menu-button"/>
+    </VBox>
+
+
+
 
     <stylesheets>
         <URL value="@window_style.css"/>
