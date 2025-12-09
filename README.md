@@ -1,4 +1,4 @@
-# Tetris (JavaFX Refactoring & Extension)
+# Tetris (JavaFX Maintenance & Extension)
 This project is a refactored and extended version of a classic Tetris game built with JavaFX. The work focuses on transitioning the legacy codebase to a robust **MVC (Model-View-Controller)** architecture, implementing modern gameplay mechanics, and overhauling the user interface.
 
 ## 🔗 GitHub
