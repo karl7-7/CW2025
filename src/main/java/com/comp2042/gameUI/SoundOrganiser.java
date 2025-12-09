@@ -3,8 +3,21 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import java.net.URL;
 
+/**
+ * Simple audio helper for background music playback using JavaFX MediaPlayer.
+ *
+ * <p>Provides methods to play a looping background track and to stop playback.
+ */
+
 public class SoundOrganiser {
     private MediaPlayer mediaPlayer;
+    /**
+     * Play a background music file (resource on classpath). If the resource cannot be
+     * located the call is ignored and a message is printed to stdout.
+     *
+     * @param fileName name of the resource file (e.g. "music.mp3")
+     */
+
     public void playBackgroundMusic(String fileName) {
         try {
             URL resource = getClass().getClassLoader().getResource(fileName);

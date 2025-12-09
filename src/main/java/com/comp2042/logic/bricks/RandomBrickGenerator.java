@@ -6,11 +6,22 @@ import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Random brick generator that maintains a short queue of upcoming pieces.
+ *
+ * <p>Implements a simple bag-like approach by selecting random pieces and keeping
+ * the next pieces in a small deque used for previews.
+ */
+
 public class RandomBrickGenerator implements BrickGenerator {
 
     private final List<Brick> brickList;
 
     private final Deque<Brick> nextBricks = new ArrayDeque<>();
+
+    /**
+     * Construct a RandomBrickGenerator and prefill the next-queue.
+     */
 
     public RandomBrickGenerator() {
         brickList = new ArrayList<>();
@@ -25,6 +36,12 @@ public class RandomBrickGenerator implements BrickGenerator {
         nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
     }
 
+    /**
+     * Return and remove the next brick from the queue, refilling when necessary.
+     *
+     * @return next Brick instance
+     */
+
     @Override
     public Brick getBrick() {
         if (nextBricks.size() <= 1) {
@@ -32,6 +49,12 @@ public class RandomBrickGenerator implements BrickGenerator {
         }
         return nextBricks.poll();
     }
+
+    /**
+     * Peek at the next brick without removing it (used for preview).
+     *
+     * @return next Brick instance
+     */
 
     @Override
     public Brick getNextBrick() {

@@ -11,7 +11,21 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Application entry point for the JavaFX Tetris application.
+ *
+ * <p>This class loads the FXML layout, initializes the GUI controller and
+ * creates the {@link GameController} which wires view and game logic together.
+ */
+
 public class Main extends Application {
+
+    /**
+     * Called by the JavaFX runtime to start the application.
+     *
+     * @param primaryStage primary window provided by JavaFX
+     * @throws Exception if FXML loading fails
+     */
 
     @Override
     public void start(Stage primaryStage) throws Exception { //start is the main entry point for javaFX applications
@@ -29,7 +43,11 @@ public class Main extends Application {
         new GameController(c); // Create a new GameController instance, passing the GuiController
     }
 
-
+    /**
+     * Application main method; delegates to JavaFX launch.
+     *
+     * @param args command line arguments (unused)
+     */
     public static void main(String[] args) { //code will start executing from here
         launch(args); // launch readies the application then invokes start
     }

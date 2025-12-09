@@ -14,7 +14,20 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
+/**
+ * UI node used to display an animated score bonus popup.
+ *
+ * <p>The panel contains a styled label and provides a convenience method to
+ * animate itself and remove from a parent children list when the animation ends.
+ */
+
 public class NotificationPanel extends BorderPane { //This class creates and animates a popup panel that shows score bonuses when the player clears line
+
+    /**
+     * Create a notification panel showing the provided text.
+     *
+     * @param text text to display (e.g. "+100")
+     */
 
     public NotificationPanel(String text) { //Constructor creates a panel containing a glowing label showing bonus score text
         setMinHeight(200);
@@ -27,6 +40,13 @@ public class NotificationPanel extends BorderPane { //This class creates and ani
         setCenter(score); //label placed in centre of BorderPane
 
     }
+
+    /**
+     * Animate the panel (fade + translate) and remove it from the given children list
+     * when the animation completes.
+     *
+     * @param list observable children list of the parent node
+     */
 
     public void showScore(ObservableList<Node> list) { //displays notification by animating it
         FadeTransition ft = new FadeTransition(Duration.millis(2000), this); //fade-out animation

@@ -6,6 +6,17 @@ import com.comp2042.logic.bricks.RandomBrickGenerator;
 
 import java.awt.*;
 
+/**
+ * Simple implementation of the {@link Board} interface representing the Tetris game board.
+ *
+ * <p>Responsibilities:
+ * <ul>
+ *     <li>Manage the board matrix and active brick position/rotation via {@link BrickRotator}.</li>
+ *     <li>Provide move/rotate/hold/hard-drop operations and merging/clearing rows.</li>
+ *     <li>Track score via {@link Score}.</li>
+ * </ul>
+ */
+
 public class SimpleBoard implements Board {
 
     private final int width;
@@ -20,6 +31,13 @@ public class SimpleBoard implements Board {
     private Brick currentBrickObj;
     private boolean canHold = true;
 
+    /**
+     * Create a SimpleBoard with the given dimensions.
+     *
+     * @param width  board width (columns)
+     * @param height board height (rows)
+     */
+
     public SimpleBoard(int width, int height) {
         this.width = width;
         this.height = height;
@@ -28,6 +46,12 @@ public class SimpleBoard implements Board {
         brickRotator = new BrickRotator();
         score = new Score();
     }
+
+    /**
+     * Attempt to move the active brick one cell down. Returns false if movement would collide.
+     *
+     * @return true when movement succeeded, false when blocked
+     */
 
     @Override
     public boolean moveBrickDown() {
@@ -43,6 +67,12 @@ public class SimpleBoard implements Board {
         }
     }
 
+    /**
+     * Attempt to move the active brick one cell left.
+     *
+     * @return true when movement succeeded, false when blocked
+     */
+
     @Override
     public boolean moveBrickLeft() {
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
@@ -56,6 +86,12 @@ public class SimpleBoard implements Board {
             return true;
         }
     }
+
+    /**
+     * Attempt to move the active brick one cell right.
+     *
+     * @return true when movement succeeded, false when blocked
+     */
 
     @Override
     public boolean moveBrickRight() {
@@ -71,6 +107,12 @@ public class SimpleBoard implements Board {
         }
     }
 
+    /**
+     * Rotate the active brick to its next rotation if possible.
+     *
+     * @return true when rotation succeeded, false when blocked
+     */
+
     @Override
     public boolean rotateLeftBrick() {
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
@@ -84,6 +126,12 @@ public class SimpleBoard implements Board {
         }
     }
 
+    /**
+     * Create a new active brick and reset hold permission.
+     *
+     * @return true if the new brick immediately collides (game over), false otherwise
+     */
+
     @Override
     public boolean createNewBrick() {
         canHold = true; // Reset hold permission
@@ -93,10 +141,24 @@ public class SimpleBoard implements Board {
         return MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
     }
 
+
+    /**
+     * Get the current background board matrix.
+     *
+     * @return 2D int matrix representing placed blocks
+     */
+
     @Override
     public int[][] getBoardMatrix() {
         return currentGameMatrix;
     }
+
+    /**
+     * Build a {@link ViewData} object representing current view state including
+     * current brick shape, offsets, next brick, held brick and ghost Y.
+     *
+     * @return view data snapshot
+     */
 
     @Override
     public ViewData getViewData() {
@@ -109,6 +171,11 @@ public class SimpleBoard implements Board {
                 getGhostY() // Pass ghost Y
         );
     }
+
+    /**
+     * Hold the current piece. Only allowed when canHold is true; after holding,
+     * canHold is set to false until a new piece is spawned.
+     */
 
     @Override
     public void holdPiece() {
@@ -127,10 +194,20 @@ public class SimpleBoard implements Board {
         canHold = false;
     }
 
+    /**
+     * Merge the active brick into the background matrix.
+     */
+
     @Override
     public void mergeBrickToBackground() {
         currentGameMatrix = MatrixOperations.merge(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
     }
+
+    /**
+     * Remove full rows from the background matrix and return information describing the removal.
+     *
+     * @return ClearRow instance with new matrix and lines removed information
+     */
 
     @Override
     public ClearRow clearRows() {
@@ -139,10 +216,20 @@ public class SimpleBoard implements Board {
         return clearRow;
     }
 
+    /**
+     * Get the {@link Score} instance used by this board.
+     *
+     * @return score object
+     */
+
     @Override
     public Score getScore() {
         return score;
     }
+
+    /**
+     * Reset the board to an initial empty state and reset score.
+     */
 
     @Override
     public void newGame() {
@@ -152,6 +239,13 @@ public class SimpleBoard implements Board {
     }
 
     // NEW: Calculate where the ghost piece should be
+
+    /**
+     * Compute the Y coordinate of the ghost (the row where the active piece would land).
+     *
+     * @return Y coordinate for ghost position
+     */
+
     private int getGhostY() {
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
         int[][] shape = brickRotator.getCurrentShape();
@@ -167,6 +261,11 @@ public class SimpleBoard implements Board {
     }
 
     // NEW: Instantly drop piece to ghost position
+
+    /**
+     * Instantly move the active piece to the ghost Y position.
+     */
+
     @Override
     public void hardDrop() {
         int y = getGhostY();

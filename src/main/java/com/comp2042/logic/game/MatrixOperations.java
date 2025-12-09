@@ -6,11 +6,31 @@ import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Utility class with static helpers for common operations on matrix representations
+ * of the board and bricks.
+ *
+ * <p>Provided operations include: intersection checks, deep copy, merge a brick into
+ * the board, row removal detection and deep-copying lists of matrices.
+ */
+
 public class MatrixOperations { //This is a utility class that performs operations on 2d integer arrays
+
+
 
     private MatrixOperations(){
 
     }
+
+    /**
+     * Check whether the given brick placed at (x,y) intersects the board or is out-of-bounds.
+     *
+     * @param matrix board matrix (rows x cols)
+     * @param brick  brick matrix
+     * @param x      x offset (column)
+     * @param y      y offset (row)
+     * @return true if a collision or out-of-bounds would occur
+     */
 
     public static boolean intersect(final int[][] matrix, final int[][] brick, int x, int y) { //checks if a brick placed at (x,y) intersects with the board of goes out of bounds
         for (int i = 0; i < brick.length; i++) {
@@ -33,6 +53,13 @@ public class MatrixOperations { //This is a utility class that performs operatio
         return returnValue;
     }
 
+    /**
+     * Deep copy a 2D integer array.
+     *
+     * @param original source matrix
+     * @return new independent copy
+     */
+
     public static int[][] copy(int[][] original) { //deep copies a 2d array
         int[][] myInt = new int[original.length][];
         for (int i = 0; i < original.length; i++) {
@@ -43,6 +70,17 @@ public class MatrixOperations { //This is a utility class that performs operatio
         }
         return myInt;
     }
+
+    /**
+     * Merge a brick into a copy of the filledFields matrix at the given offset,
+     * returning the merged matrix.
+     *
+     * @param filledFields background matrix
+     * @param brick        brick matrix
+     * @param x            x offset (column)
+     * @param y            y offset (row)
+     * @return new matrix with the brick merged
+     */
 
     public static int[][] merge(int[][] filledFields, int[][] brick, int x, int y) { //merges a brick into the board at (x,y) and returns a new matrix
         int[][] copy = copy(filledFields);
@@ -57,6 +95,14 @@ public class MatrixOperations { //This is a utility class that performs operatio
         }
         return copy;
     }
+
+    /**
+     * Detect and remove full rows from the matrix. Returns a {@link ClearRow}
+     * containing the number of removed lines, the new matrix and the score bonus.
+     *
+     * @param matrix source board matrix
+     * @return ClearRow describing the removal result
+     */
 
     public static ClearRow checkRemoving(final int[][] matrix) {
         int[][] tmp = new int[matrix.length][matrix[0].length];
@@ -89,6 +135,13 @@ public class MatrixOperations { //This is a utility class that performs operatio
         int scoreBonus = 50 * clearedRows.size() * clearedRows.size(); //score bonus grows quadratically with number of lines cleared
         return new ClearRow(clearedRows.size(), tmp, scoreBonus);
     }
+
+    /**
+     * Deep copy a list of 2D integer arrays.
+     *
+     * @param list source list
+     * @return new list with copied matrices
+     */
 
     public static List<int[][]> deepCopyList(List<int[][]> list){
         return list.stream().map(MatrixOperations::copy).collect(Collectors.toList()); //deep copies a list of int matrices (useful when storing preview shapes or history)

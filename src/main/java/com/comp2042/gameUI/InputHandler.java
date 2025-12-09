@@ -12,6 +12,12 @@ import javafx.scene.input.KeyEvent;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
+/**
+ * Handles keyboard input and forwards corresponding events to the game logic via an
+ * {@link InputEventListener}. Also instructs the {@link GameViewRenderer} to refresh visuals
+ * and uses {@link NotificationManager} for score popups.
+ */
+
 public class InputHandler {
     private InputEventListener eventListener;
     private final GameViewRenderer renderer;
@@ -19,6 +25,18 @@ public class InputHandler {
     private final BooleanSupplier isPaused;
     private final BooleanSupplier isGameOver;
     private final Function<MoveEvent, DownData> downProcessor;
+
+
+
+    /**
+     * Create a new InputHandler.
+     *
+     * @param renderer            renderer used to update brick visuals
+     * @param notificationManager manager used to show score notifications
+     * @param isPaused            supplier returning whether the game is paused
+     * @param isGameOver          supplier returning whether the game is over
+     * @param downProcessor       function to process DOWN/HARD_DROP events and return {@link DownData}
+     */
 
     public InputHandler(GameViewRenderer renderer,
                         NotificationManager notificationManager,
@@ -32,9 +50,23 @@ public class InputHandler {
         this.downProcessor = downProcessor;
     }
 
+    /**
+     * Set the listener that will receive translated input events.
+     *
+     * @param listener listener implementation
+     */
     public void setEventListener(InputEventListener listener) {
         this.eventListener = listener;
     }
+
+
+    /**
+     * Handle a key event coming from the UI. This will translate keys to game actions,
+     * call the appropriate method on the {@link InputEventListener}, update the renderer,
+     * and show score popups when rows are cleared.
+     *
+     * @param keyEvent the JavaFX key event
+     */
 
     public void handleKey(KeyEvent keyEvent) {
         if (isPaused.getAsBoolean() || isGameOver.getAsBoolean()) {

@@ -6,6 +6,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
+/**
+ * Responsible for drawing the game board, the active brick, ghost pieces and small side previews
+ * (next and hold) using JavaFX rectangles placed into GridPane containers.
+ *
+ * <p>This class offers methods to initialize the view and refresh the active brick and background.
+ */
+
 public class GameViewRenderer {
     private static final int BRICK_SIZE = 20;
 
@@ -20,16 +27,35 @@ public class GameViewRenderer {
     private Rectangle[][] rectangles;
     private Rectangle[][] ghostRectangles;
 
+    /**
+     * Create a renderer bound to the main game grid and a separate brick panel used to position the active piece.
+     *
+     * @param gamePanel  grid for the background board
+     * @param brickPanel grid used to draw the currently active brick
+     */
+
     public GameViewRenderer(GridPane gamePanel, GridPane brickPanel) {
         this.gamePanel = gamePanel;
         this.brickPanel = brickPanel;
     }
 
-    // NEW: Setter for Side Panels
+    /**
+     * Set the optional side panels used to draw the next and hold previews.
+     *
+     * @param nextBrickPanel gridpane for next piece
+     * @param holdBrickPanel gridpane for hold piece
+     */
     public void setSidePanels(GridPane nextBrickPanel, GridPane holdBrickPanel) {
         this.nextBrickPanel = nextBrickPanel;
         this.holdBrickPanel = holdBrickPanel;
     }
+
+    /**
+     * Initialize the view using the background board matrix and the provided {@link ViewData} for the active brick.
+     *
+     * @param boardMatrix background board
+     * @param brick       view data for the active brick
+     */
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         displayMatrix = new Rectangle[boardMatrix.length][boardMatrix[0].length];
@@ -67,6 +93,13 @@ public class GameViewRenderer {
         // NEW: Draw side panels initially
         updateSidePanels(brick);
     }
+
+
+    /**
+     * Refresh the active brick visuals (including ghost) and update side previews.
+     *
+     * @param brick view data snapshot
+     */
 
     public void refreshBrick(ViewData brick) {
         updateBrickPanelPosition(brick);
@@ -114,6 +147,12 @@ public class GameViewRenderer {
             }
         }
     }
+
+    /**
+     * Refresh the board background rectangles according to the provided board matrix.
+     *
+     * @param board background board matrix
+     */
 
     public void refreshGameBackground(int[][] board) {
         for (int i = 2; i < board.length; i++) {

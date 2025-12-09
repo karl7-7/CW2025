@@ -23,6 +23,20 @@ import java.util.ResourceBundle;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
+/**
+ * Controller for the game's GUI. Responsible for wiring UI components (from FXML)
+ * to the rendering, timeline and input handling logic.
+ *
+ * <p>This class:
+ * <ul>
+ *     <li>Initializes the {@link GameViewRenderer}, {@link NotificationManager},
+ *     {@link TimelineManager}, {@link InputHandler} and {@link SoundOrganiser}.</li>
+ *     <li>Provides navigation methods for menus (start, pause, controls, how-to-play).</li>
+ *     <li>Exposes binding helpers for score and level display and methods for starting,
+ *     pausing and ending the game.</li>
+ * </ul>
+ */
+
 public class GuiController implements Initializable {
 
     @FXML private GridPane gamePanel;
@@ -54,6 +68,14 @@ public class GuiController implements Initializable {
     private final SimpleIntegerProperty levelProperty = new SimpleIntegerProperty(1);
 
     private VBox previousMenu;
+
+    /**
+     * JavaFX initialize method. Wires up renderer, notification manager, input/timeline managers,
+     * and sets initial bindings and event handlers.
+     *
+     * @param location  unused
+     * @param resources unused
+     */
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -104,6 +126,13 @@ public class GuiController implements Initializable {
     }
 
     // --- NAVIGATION METHODS ---
+
+    /**
+     * Return to the main menu. Stops the timeline and shows the start menu container.
+     *
+     * @param actionEvent source action
+     */
+
     public void goToMainMenu(ActionEvent actionEvent) {
         timelineManager.stop();
         if (pauseMenu != null) pauseMenu.setVisible(false);
@@ -113,6 +142,12 @@ public class GuiController implements Initializable {
         isPause.setValue(false);
     }
 
+    /**
+     * Show the controls overlay from either the start menu or pause menu.
+     *
+     * @param actionEvent source action
+     */
+
     public void showControls(ActionEvent actionEvent) {
         if (startMenuContainer.isVisible()) previousMenu = startMenuContainer;
         else if (pauseMenu.isVisible()) previousMenu = pauseMenu;
@@ -121,10 +156,22 @@ public class GuiController implements Initializable {
         controlsOverlay.setVisible(true);
     }
 
+    /**
+     * Close the controls overlay and restore the previous menu.
+     *
+     * @param actionEvent source action
+     */
+
     public void closeControls(ActionEvent actionEvent) {
         controlsOverlay.setVisible(false);
         if (previousMenu != null) previousMenu.setVisible(true);
     }
+
+    /**
+     * Show the how-to-play overlay from either the start menu or pause menu.
+     *
+     * @param actionEvent source action
+     */
 
     public void showHowToPlay(ActionEvent actionEvent) {
         if (startMenuContainer.isVisible()) previousMenu = startMenuContainer;
@@ -134,10 +181,22 @@ public class GuiController implements Initializable {
         howToPlayOverlay.setVisible(true);
     }
 
+    /**
+     * Close the how-to-play overlay and restore the previous menu.
+     *
+     * @param actionEvent source action
+     */
+
     public void closeHowToPlay(ActionEvent actionEvent) {
         howToPlayOverlay.setVisible(false);
         if (previousMenu != null) previousMenu.setVisible(true);
     }
+
+    /**
+     * Handler for the start game button. Hides the start menu and starts a new game.
+     *
+     * @param actionEvent source action
+     */
 
     public void onStartGame(ActionEvent actionEvent) {
         startMenuContainer.setVisible(false);
@@ -156,20 +215,45 @@ public class GuiController implements Initializable {
         inputHandler.handleKey(keyEvent);
     }
 
+    /**
+     * Register the {@link InputEventListener} used to forward input events to the game logic.
+     *
+     * @param eventListener listener implementation
+     */
+
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
         this.inputHandler.setEventListener(eventListener);
     }
 
+    /**
+     * Initialize the renderer with the current board matrix and active brick data.
+     *
+     * @param boardMatrix background board matrix
+     * @param brick       view data for the active brick
+     */
+
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         renderer.initGameView(boardMatrix, brick);
     }
+
+    /**
+     * Bind a label to the score property.
+     *
+     * @param integerProperty score property to bind to
+     */
 
     public void bindScore(IntegerProperty integerProperty) {
         if (scoreLabel != null) {
             scoreLabel.textProperty().bind(new SimpleStringProperty("Score: ").concat(integerProperty.asString()));
         }
     }
+
+    /**
+     * Bind the UI to the score property and automatically update level and timeline speed when score changes.
+     *
+     * @param scoreProperty integer property representing score
+     */
 
     public void bindScoreAndLevel(IntegerProperty scoreProperty) {
         bindScore(scoreProperty);
@@ -188,14 +272,31 @@ public class GuiController implements Initializable {
         timelineManager.setPeriodMillis(initialPeriod);
     }
 
+    /**
+     * Refreshes the background view using the provided board matrix.
+     *
+     * @param boardMatrix background board matrix
+     */
+
     public void refreshGameBackground(int[][] boardMatrix) {
         if (renderer != null) renderer.refreshGameBackground(boardMatrix);
     }
+
+    /**
+     * Put the UI into game-over state and stop the timeline.
+     */
 
     public void gameOver() {
         timelineManager.stop();
         isGameOver.setValue(Boolean.TRUE);
     }
+
+    /**
+     * Start a new game. Stops timeline, requests creation of a new game via event listener,
+     * hides pause menu and restarts the timeline.
+     *
+     * @param actionEvent source action
+     */
 
     public void newGame(ActionEvent actionEvent) {
         timelineManager.stop();
@@ -206,6 +307,12 @@ public class GuiController implements Initializable {
         if (pauseMenu != null) pauseMenu.setVisible(false);
         timelineManager.start();
     }
+
+    /**
+     * Toggle pause state. Stops/starts the timeline and shows/hides the pause menu.
+     *
+     * @param actionEvent source action
+     */
 
     public void pauseGame(ActionEvent actionEvent) {
         if ((controlsOverlay != null && controlsOverlay.isVisible()) ||
